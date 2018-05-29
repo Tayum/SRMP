@@ -1,0 +1,54 @@
+{% extends "property/base.html" %}
+
+{% block headblock %}
+  <title>SRMP | Sign Up</title>
+{% endblock %}
+
+{% block bodyblock %}
+  <div class="container">
+    <div class="row">
+      <div class="thumbnail">
+        <h3 style="text-align: center;">Sign up</h3>
+        <hr align="left" width="100%" style="border-width: 4px; border-color:#6666ff" />
+        <form class="form-horizontal" action="/property/signup/" method="post">
+          {% csrf_token %}
+          <div class="form-group">
+            <label class="control-label col-sm-4" for="login">Login:</label>
+            <div class="col-sm-7">
+              <input type="text" class="form-control" id="login" name="login" placeholder="Enter login">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-4" for="name">Full name:</label>
+            <div class="col-sm-7">
+              <input type="text" class="form-control" id="name" name="name" placeholder="Enter full name">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-4" for="doc">Link on document:</label>
+            <div class="col-sm-7">
+              <input type="text" class="form-control" id="doc" name="doc" placeholder="Enter link">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-4" for="pwd">Password:</label>
+            <div class="col-sm-7">
+              <input type="password" class="form-control" id="pwd" name="pwd" placeholder="Enter password">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-4" for="pwd2">Repeat password:</label>
+            <div class="col-sm-7">
+              <input type="password" class="form-control" id="pwd2" name="pwd2" placeholder="Repeat password">
+            </div>
+          </div>
+          <div class="form-group ">
+            <div class="col-sm-offset-2 col-sm-4">
+              <button type="submit" name="btn-sign_up" class="btn btn-primary" style="float:right">Sign up</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}
