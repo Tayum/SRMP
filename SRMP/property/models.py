@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 # CharField Length
 CFLEN = 45
 
+
 class Notary(models.Model):
     id = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, db_column='id')
     full_name = models.CharField(max_length=CFLEN, blank=True, null=True)
@@ -15,14 +16,13 @@ class Notary(models.Model):
         db_table = 'notaries'
 
     def __str__(self):
-        return "{0}".format(self.full_name)
+        return self.full_name
 
 
 class ReasonDocument(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=CFLEN, blank=True, null=True)
     date = models.DateField(blank=True, null=True)
-    notary_id = models.ForeignKey(Notary, models.DO_NOTHING, db_column='notary_id')
     description = models.TextField(blank=True, null=True)
 
     class Meta:
@@ -30,7 +30,7 @@ class ReasonDocument(models.Model):
         db_table = 'reason_documents'
 
     def __str__(self):
-        return "{0} (Notary: {1})".format(self.name, self.notary_id)
+        return self.name
 
 
 class Object(models.Model):

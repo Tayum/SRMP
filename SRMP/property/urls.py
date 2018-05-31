@@ -9,4 +9,5 @@ urlpatterns = [
     path('create_encumbrance/', views.create_encumbrance, name='create_encumbrance'),
     path('encumbrances/', views.encumbrances, name='encumbrances'),
     path('encumbrance/', views.encumbrance, name='encumbrance'),
+    path('profile/', views.profile, name='profile'),
 ]

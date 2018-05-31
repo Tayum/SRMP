@@ -1,0 +1,55 @@
+{% extends "property/base.html" %}
+
+{% block headblock %}
+  <title>SRMP | User Profile</title>
+{% endblock %}
+
+{% block bodyblock %}
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2">
+        <div class="thumbnail" style="width:200px;">
+          <img src="https://media.giphy.com/media/OjmiOjUPzJSSI/giphy.gif">
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="container">
+          <div class="col-xs-10">
+            <div class="thumbnail" style="min-height:275px;">
+              <h2>{{ notary.full_name }}</h2>
+              <h4>{{ notary.license }}</h4>
+              <br><br><br><br>
+              <p>
+                  {% if notary.is_licensed %}
+                    <a href="/property/create_encumbrance/" class="btn btn-default" role="button">
+                      Create encumbrance
+                    </a>
+                  {% else %}
+                    <a class="btn btn-default" role="button" onclick="alert('Notary has not license')">
+                      Create encumbrance
+                    </a>
+                    {% if encumbrances %}
+                        <p>Encumbrances list:</p>
+                        {% for e in encumbrances %}
+                            <a href="/property/encumbrance?id={{ e.id }}">{{ e.id }} (Secret code: {{ e.hashcode }})</a>
+                        {% endfor %}
+                    {% else %}
+                        <br><br>
+                    {% endif %}
+                  {% endif %}
+              </p>
+            <!--
+              <p>
+                <a href="/search" class="btn btn-default" role="button">
+                  View created encumbrances list 
+                </a>
+              </p>
+            -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
