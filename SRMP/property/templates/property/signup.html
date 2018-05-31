@@ -39,16 +39,37 @@
           <div class="form-group">
             <label class="control-label col-sm-4" for="pwd2">Repeat password:</label>
             <div class="col-sm-7">
-              <input type="password" class="form-control" id="pwd2" name="pwd2" placeholder="Repeat password">
+              <input type="password" class="form-control" id="pwd2" name="pwd2" onkeydown="delVal()" placeholder="Repeat password">
             </div>
           </div>
           <div class="form-group ">
             <div class="col-sm-offset-2 col-sm-4">
-              <button type="submit" name="btn-sign_up" class="btn btn-primary" style="float:right">Sign up</button>
+              <button type="submit" name="btn-sign_up" class="btn btn-primary" onclick="validatePassword()" style="float:right">Sign up</button>
             </div>
           </div>
         </form>
       </div>
     </div>
   </div>
+    <script>
+    window.onload = function () {
+        document.getElementById("pwd").onchange = validatePassword;
+        document.getElementById("pwd2").onchange = validatePassword;
+    };
+    function delVal() {
+        document.getElementById("pwd2").setCustomValidity('');
+
+    }
+    function validatePassword() {
+        var pass2 = document.getElementById("pwd2").value;
+        var pass1 = document.getElementById("pwd").value;
+        if(pass1 != pass2) {
+            document.getElementById("pwd2").setCustomValidity("Passwords Don`t Match");
+        }
+        else{
+            document.getElementById("pwd2").setCustomValidity("");
+        }
+
+    }
+    </script>
 {% endblock %}

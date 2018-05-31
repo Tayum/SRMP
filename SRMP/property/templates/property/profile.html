@@ -16,35 +16,32 @@
         <div class="container">
           <div class="col-xs-10">
             <div class="thumbnail" style="min-height:275px;">
+              {% if notary.licensed %}
+                <a href="/property/create_encumbrance/" class="btn btn-success" role="button" style="float: right;">
+                  Create encumbrance
+                </a>
+              {% else %}
+                <a class="btn btn-warning" role="button" onclick="alert('Notary has not license')" style="float: right;">
+                  Create encumbrance
+                </a>
+              {% endif %}
               <h2>{{ notary.full_name }}</h2>
               <h4>{{ notary.license }}</h4>
-              <br><br><br><br>
-              <p>
-                  {% if notary.is_licensed %}
-                    <a href="/property/create_encumbrance/" class="btn btn-default" role="button">
-                      Create encumbrance
-                    </a>
-                  {% else %}
-                    <a class="btn btn-default" role="button" onclick="alert('Notary has not license')">
-                      Create encumbrance
-                    </a>
+              <br><br>
+                {% if notary.licensed %}
+                  <p>
+                  <div class="list-group">
                     {% if encumbrances %}
-                        <p>Encumbrances list:</p>
-                        {% for e in encumbrances %}
-                            <a href="/property/encumbrance?id={{ e.id }}">{{ e.id }} (Secret code: {{ e.hashcode }})</a>
-                        {% endfor %}
-                    {% else %}
-                        <br><br>
+                      <h4>Encumbrances list:</h4>
+                      {% for e in encumbrances %}
+                        <a href="/property/encumbrance?id={{ e.id }}" class="list-group-item">
+                          {{ e.id }} (Secret code: {{ e.hashcode }})
+                        </a>
+                      {% endfor %}
                     {% endif %}
-                  {% endif %}
-              </p>
-            <!--
-              <p>
-                <a href="/search" class="btn btn-default" role="button">
-                  View created encumbrances list 
-                </a>
-              </p>
-            -->
+                  </div>
+                  </p>
+                {% endif %}
             </div>
           </div>
         </div>

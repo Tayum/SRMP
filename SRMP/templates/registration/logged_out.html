@@ -1,11 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Logout</title>
-</head>
-<body>
-Logged out!
-<a href="{% url 'login'%}">Click here to login again.</a>
-</body>
-</html>
+{% extends "property/base.html" %}
+
+{% block headblock %}
+  <title>SRMP | Logout</title>
+{% endblock %}
+
+{% block bodyblock %}
+<div class="container">
+  <div class="row">
+    <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2">
+      <div class="thumbnail" style="width:200px;">
+        <img src="https://media.giphy.com/media/IThjAlJnD9WNO/giphy.gif">
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="container">
+        <div class="col-xs-10">
+          <div class="thumbnail">
+            <h4>Good bye!</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

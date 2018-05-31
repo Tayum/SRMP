@@ -33,8 +33,17 @@ def signup(request):
 @login_required
 def create_encumbrance(request):
     if request.method == "POST":
-        # TODO
         enc = dict()
+        enc['date'] = str(request.POST.get('date', "1900-01-01"))
+        enc['prosecutor_id'] = request.POST.get('prosecutor', -1)
+        enc['debtor_id'] = request.POST.get('debtor', -1)
+        enc['notary_id'] = request.POST.get('notary', -1)
+        enc['reason_document_id'] = request.POST.get('reason_document', -1)
+        enc['encumbrance_kind'] = request.POST.get('encumbrance_kind', "")
+        enc['encumbrance_type'] = request.POST.get('encumbrance_type', "")
+        enc['debt_amount'] = request.POST.get('debt_amount', "0")
+        enc['deadline'] = str(request.POST.get('deadline', "1900-01-01"))
+        enc['object_id'] = request.POST.get('object', -1)
 
         # (construct encumbrance dictionary from the values from form)
         enc_id = pm.create_encumbrance(enc)
@@ -47,7 +56,32 @@ def create_encumbrance(request):
                       })
     else:
         if not request.user.is_superuser and request.user.notary.licensed:
-            return render(request, 'property/create_encumbrance.html')
+            prosecutors = pm.read_prosecutors()
+            prosecutors = [{
+                "id": p['id'],
+                "value": p['full_name'],
+            } for p in prosecutors]
+            debtors = pm.read_debtors()
+            debtors = [{
+                "id": d['id'],
+                "value": d['full_name'],
+            } for d in debtors]
+            rds = pm.read_reason_documents()
+            rds = [{
+                "id": rd['id'],
+                "value": rd['name'],
+            } for rd in rds]
+            objs = pm.read_objects()
+            objs = [{
+                "id": o['id'],
+                "value": o['serial_number'],
+            } for o in objs]
+            return render(request, 'property/create_encumbrance.html', {
+                "prosecutors": prosecutors,
+                "debtors": debtors,
+                "reason_documents": rds,
+                "objects": objs,
+            })
         else:
             return render(request, 'property/index.html')
 
@@ -87,10 +121,10 @@ def profile(request):
         return redirect("/admin/")
     else:
         # get encumbrances that are affiliated with this notary
-        encs = pm.read_encumbrances_by_notary(current_user.notary.id)
+        encs = pm.read_encumbrances_by_notary(current_user.id)
         encs = [{
-            "id": e.id,
-            "hashcode": e.hashcode,
+            "id": e['id'],
+            "hashcode": e['hashcode'],
         } for e in encs] if encs else None
         return render(request, 'property/profile.html',
                       {

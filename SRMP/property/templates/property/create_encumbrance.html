@@ -1,10 +1,107 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Create Encumbrance</title>
-</head>
-<body>
-Create Encumbrance
-</body>
-</html>
+{% extends "property/base.html" %}
+
+{% block headblock %}
+  <title>SRMP | Encumbrance Registration</title>
+{% endblock %}
+
+{% block bodyblock %}
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="container">
+          <div class="col-xs-10">
+            <div class="thumbnail">
+              <form class="form-horizontal" action="/property/create_encumbrance/" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                  <label class="control-label col-sm-4" for="date">Date registration:</label>
+                  <div class="col-sm-8">
+                    <input type="date" class="form-control" id="date" name="date" required>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-sm-4" for="prosecutor">Prosecutor:</label>
+                  <div class="col-sm-8">
+                    <select class="form-control" id="prosecutor" name="prosecutor">
+                      {% for p in prosecutors %}
+                        <option value="{{ p.id }}">{{ p.value }}</option>
+                      {% endfor%}
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-sm-4" for="debtor">Debtor:</label>
+                  <div class="col-sm-8">
+                    <select class="form-control" id="debtor" name="debtor">
+                      {% for d in debtors %}
+                        <option value="{{ d.id }}">{{ d.value }}</option>
+                      {% endfor%}
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="col-sm-8">
+                    <input type="hidden" class="form-control" id="notary" name="notary"
+                    value="{{ user.id }}">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-sm-4" for="reason_document">Reason document:</label>
+                  <div class="col-sm-8">
+                    <select class="form-control" id="reason_document" name="reason_document">
+                      {% for rd in reason_documents %}
+                        <option value="{{ rd.id }}">{{ rd.value }}</option>
+                      {% endfor%}
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-sm-4" for="encumbrance_kind">Encumbrance Kind:</label>
+                  <div class="col-sm-8">
+                    <input type="text" class="form-control" id="encumbrance_kind" name="encumbrance_kind"
+                    required>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-sm-4" for="encumbrance_type">Encumbrance type:</label>
+                  <div class="col-sm-8">
+                    <input type="text" class="form-control" id="encumbrance_type" name="encumbrance_type"
+                    required>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-sm-4" for="debt_amount">Debt amount:</label>
+                  <div class="col-sm-8">
+                    <input type="text" class="form-control" id="debt_amount" name="debt_amount" required>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-sm-4" for="deadline">Deadline:</label>
+                  <div class="col-sm-8">
+                    <input type="date" class="form-control" id="deadline" name="deadline" required>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-sm-4" for="object">Object:</label>
+                  <div class="col-sm-8">
+
+                    <select class="form-control" id="object" name="object">
+                      {% for o in objects %}
+                        <option value="{{ o.id }}">{{ o.value }}</option>
+                      {% endfor%}
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-default" style="float:right">Send</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
