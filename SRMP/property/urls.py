@@ -10,4 +10,5 @@ urlpatterns = [
     path('encumbrances/', views.encumbrances, name='encumbrances'),
     path('encumbrance/', views.encumbrance, name='encumbrance'),
     path('profile/', views.profile, name='profile'),
+    path('modify_encumbrance/', views.modify_encumbrance, name='modify_encumbrance')
 ]

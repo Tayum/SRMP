@@ -104,6 +104,7 @@ class Encumbrance(models.Model):
     deadline = models.DateField(blank=True, null=True)
     object_id = models.ForeignKey(Object, models.DO_NOTHING, db_column='object_id')
     hashcode = models.CharField(max_length=100, blank=True, null=True, default="secret")
+    checked = models.NullBooleanField(default=False, blank=True, null=True)
 
     class Meta:
         managed = True

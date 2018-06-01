@@ -1,0 +1,129 @@
+{% extends "property/base.html" %}
+
+{% block headblock %}
+  <title>SRMP | Encumbrance Modification</title>
+{% endblock %}
+
+{% block bodyblock %}
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="container">
+          <div class="col-xs-10">
+            <div class="thumbnail">
+              <form class="form-horizontal" action="/property/modify_encumbrance/" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                  <div class="col-sm-8">
+                    <input type="hidden" class="form-control" id="encumbrance_id" name="encumbrance_id"
+                    value="{{ encumbrance.id }}">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-sm-4" for="date">Date registration:</label>
+                  <div class="col-sm-8">
+                    <input type="date" class="form-control" id="date" name="date" required value="{{ encumbrance.date }}">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-sm-4" for="prosecutor">Prosecutor:</label>
+                  <div class="col-sm-8">
+                    <select class="form-control" id="prosecutor" name="prosecutor">
+                      {% for p in prosecutors %}
+                        {% if p.id == encumbrance.prosecutor_id %}
+                          <option value="{{ p.id }}" selected>{{ p.value }}</option>
+                        {% else %}
+                          <option value="{{ p.id }}">{{ p.value }}</option>
+                        {% endif %}
+                      {% endfor%}
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-sm-4" for="debtor">Debtor:</label>
+                  <div class="col-sm-8">
+                    <select class="form-control" id="debtor" name="debtor">
+                      {% for d in debtors %}
+                        {% if d.id == encumbrance.debtor_id %}
+                          <option value="{{ d.id }}" selected>{{ d.value }}</option>
+                        {% else %}
+                          <option value="{{ d.id }}">{{ d.value }}</option>
+                        {% endif %}
+                      {% endfor%}
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="col-sm-8">
+                    <input type="hidden" class="form-control" id="notary" name="notary"
+                    value="{{ user.id }}">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-sm-4" for="reason_document">Reason document:</label>
+                  <div class="col-sm-8">
+                    <select class="form-control" id="reason_document" name="reason_document">
+                      {% for rd in reason_documents %}
+                        {% if rd.id == encumbrance.reason_document_id %}
+                          <option value="{{ rd.id }}" selected>{{ rd.value }}</option>
+                        {% else %}
+                          <option value="{{ rd.id }}">{{ rd.value }}</option>
+                        {% endif %}
+                      {% endfor%}
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-sm-4" for="encumbrance_kind">Encumbrance Kind:</label>
+                  <div class="col-sm-8">
+                    <input type="text" class="form-control" id="encumbrance_kind" name="encumbrance_kind"
+                    required value="{{ encumbrance.encumbrance_kind }}">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-sm-4" for="encumbrance_type">Encumbrance type:</label>
+                  <div class="col-sm-8">
+                    <input type="text" class="form-control" id="encumbrance_type" name="encumbrance_type"
+                    required value="{{ encumbrance.encumbrance_type }}">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-sm-4" for="debt_amount">Debt amount:</label>
+                  <div class="col-sm-8">
+                    <input type="text" class="form-control" id="debt_amount" name="debt_amount" required value="{{ encumbrance.debt_amount }}">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-sm-4" for="deadline">Deadline:</label>
+                  <div class="col-sm-8">
+                    <input type="date" class="form-control" id="deadline" name="deadline" required value="{{ encumbrance.deadline }}">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-sm-4" for="object">Object:</label>
+                  <div class="col-sm-8">
+
+                    <select class="form-control" id="object" name="object">
+                      {% for o in objects %}
+                        {% if o.id == encumbrance.object_id %}
+                          <option value="{{ o.id }}" selected>{{ o.value }}</option>
+                        {% else %}
+                          <option value="{{ o.id }}">{{ o.value }}</option>
+                        {% endif %}
+                      {% endfor%}
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-default" style="float:right">Send</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

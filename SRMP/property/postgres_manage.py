@@ -33,13 +33,13 @@ class PostgresManage:
         debtor = self.read_debtors(encumbrance['debtor_id'])
         rd = self.read_reason_documents(encumbrance['reason_document_id'])
         obj = self.read_objects(encumbrance['object_id'])
-        print(encumbrance['notary_id'])
+
         notary = self.read_notaries(encumbrance['notary_id'])
         enc = Encumbrance(date=d, prosecutor_id=prosecutor,
                           debtor_id=debtor, notary_id=notary,
                           reason_document=rd, encumbrance_kind=encumbrance['encumbrance_kind'],
                           encumbrance_type=encumbrance['encumbrance_type'], debt_amount=encumbrance['debt_amount'],
-                          deadline=dd, object_id=obj, hashcode="",)
+                          deadline=dd, object_id=obj, checked=False, hashcode="",)
         enc.save()
         enc_id = enc.id
         enc.hashcode = hashlib.sha256(SALT.encode() + str(enc_id).encode()).hexdigest()
@@ -55,7 +55,33 @@ class PostgresManage:
 
             if isinstance(query, int):
                 if query > 0:
-                    return Encumbrance.objects.filter(id=query).values()
+                    enc = Encumbrance.objects.filter(id=query).values()
+                    enc = enc[0]
+                    prosecutor = enc['prosecutor_id_id']
+                    prosecutor = self.read_prosecutors(prosecutor)
+                    prosecutor_addr = prosecutor.address_id
+                    debtor = enc['debtor_id_id']
+                    debtor = self.read_debtors(debtor)
+                    debtor_addr = debtor.address_id
+                    notary = enc['notary_id_id']
+                    notary = self.read_notaries(notary)
+                    reason_document = enc['reason_document_id']
+                    reason_document = self.read_reason_documents(reason_document)
+                    obj = enc['object_id_id']
+                    obj = self.read_objects(obj)
+                    if enc['checked']:
+                        return {
+                            "encumbrance": enc,
+                            "prosecutor": prosecutor,
+                            "prosecutor_addr": prosecutor_addr,
+                            "debtor": debtor,
+                            "debtor_addr": debtor_addr,
+                            "notary": notary,
+                            "reason_document": reason_document,
+                            "object": obj,
+                        }
+                    else:
+                        return None
                 else:
                     return None
             elif not single:
@@ -99,5 +125,42 @@ class PostgresManage:
             # TODO
             return None
 
+    def read_addresses(self, id=None):
+        if id:
+            return Address.objects.get(id=id)
+        else:
+            # TODO
+            return None
+
     def read_encumbrances_by_notary(self, notary_id):
         return Encumbrance.objects.filter(notary_id=notary_id).values()
+
+    def read_encumbrance_for_modifying(self, enc_id):
+            try:
+                enc_id = int(enc_id)
+            except:
+                enc_id = -1
+                return None
+            if enc_id > 0:
+                enc = Encumbrance.objects.filter(id=enc_id).values()
+                return enc
+            else:
+                return None
+
+    def modify_encumbrance(self, enc_id, new_values_enc):
+        try:
+            enc = Encumbrance.objects.filter(id=enc_id).get()
+        except:
+            return None
+        enc.date = new_values_enc['date']
+        prosecutor = self.read_prosecutors(new_values_enc['prosecutor_id'])
+        enc.prosecutor_id = prosecutor
+        debtor = self.read_debtors(new_values_enc['debtor_id'])
+        enc.debtor_id = debtor
+        enc.encumbrance_kind = new_values_enc['encumbrance_kind']
+        enc.encumbrance_type = new_values_enc['encumbrance_type']
+        enc.debt_amount = new_values_enc['debt_amount']
+        enc.deadline = new_values_enc['deadline']
+        obj = self.read_objects(new_values_enc['object_id'])
+        enc.object_id = obj
+        enc.save()

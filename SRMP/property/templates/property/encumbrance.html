@@ -88,14 +88,15 @@
 {% endblock %}
 
 {% block bodyblock %}
+{% if info %}
 <div id="overlay">
     <div class="popup">
-        <h2 style="margin-left:20px;">Check privat code</h2>
+        <h2 style="margin-left:20px;">Check private code</h2>
         <br><br>
         <div class="col-sm-7">
           <input type="text" class="form-control" id="input_pwd">
         </div>
-        <button class="close1" id="secret_pwd" value="4"
+        <button class="close1" id="secret_pwd" value="{{ encumbrance.hashcode }}"
         onclick="validatePassword()"></button>
     </div>
 </div>
@@ -104,18 +105,71 @@
 <div class="container">
   <div class="row">
    <div class="thumbnail">
-    <p><b>ID: </b>{{encumbrance.id}}</p>
-    <p><b>Date: </b>{{encumbrance.date}}</p>
-    <p><b>Rosecutor id: </b>{{encumbrance.rosecutor_id}}</p>
-    <p><b>Debtor id: </b>{{encumbrance.debtor_id}}</p>
-    <p><b>Notary id: </b>{{encumbrance.notary_id}}</p>
-    <p><b>Reason document: </b>{{encumbrance.reason_document}}</p>
-    <p><b>Encumbrance kind: </b>{{encumbrance.encumbrance_kind}}</p>
-    <p><b>Encumbrance type: </b>{{encumbrance.encumbrance_type}}</p>
-    <p><b>Debt amount: </b>{{encumbrance.debt_amount}}</p>
-    <p><b>Deadline: </b>{{encumbrance.deadline}}</p>
-    <p><b>Object_id: </b>{{encumbrance.object_id}}</p>
-    <p><b>Hashcode: </b>{{encumbrance.hashcode}}</p>
+    <a href="/property/modify_encumbrance/?id={{ encumbrance.id }}" class="btn btn-warning" role="button" style="float: right;">
+      Modify encumbrance
+    </a>
+    <p><b>ID: </b>{{ encumbrance.id }}</p>
+    <p><b>Date: </b>{{ encumbrance.date }}</p>
+
+    <p><b>Prosecutor info: </b></p>
+       <ul>
+           <li>ID: {{ prosecutor.id }}</li>
+           <li>Full Name: {{ prosecutor.full_name }}</li>
+           <li>
+               <b>Address:</b>
+                 <ul>
+                     <li>{{ prosecutor_addr.index }}</li>
+                     <li>{{ prosecutor_addr.city }}</li>
+                     <li>{{ prosecutor_addr.street }}</li>
+                     <li>{{ prosecutor_addr.country }}</li>
+                 </ul>
+           </li>
+           <li>Options: {{ prosecutor.options }}</li>
+           <li>Code: {{ prosecutor.code }}</li>
+       </ul>
+
+    <p><b>Debtor info: </b></p>
+       <ul>
+           <li>ID: {{ debtor.id }}</li>
+           <li>Full Name: {{ debtor.full_name }}</li>
+           <li>
+               <b>Address:</b>
+                 <ul>
+                     <li>{{ debtor_addr.index }}</li>
+                     <li>{{ debtor_addr.city }}</li>
+                     <li>{{ debtor_addr.street }}</li>
+                     <li>{{ debtor_addr.country }}</li>
+                 </ul>
+           </li>
+           <li>Options: {{ debtor.options }}</li>
+           <li>Code: {{ debtor.code }}</li>
+       </ul>
+
+    <p><b>Notary info: </b></p>
+       <ul>
+           <li>ID: {{ notary.id }}</li>
+           <li>Full name: {{ notary.full_name }}</li>
+       </ul>
+
+    <p><b>Reason Document: </b></p>
+       <ul>
+           <li>ID: {{ reason_document.id }}</li>
+           <li>Name: {{ reason_document.name }}</li>
+           <li>Date: {{ reason_document.date }}</li>
+           <li>Description: {{ reason_document.description }}</li>
+       </ul>
+
+    <p><b>Encumbrance kind: </b>{{ encumbrance.encumbrance_kind }}</p>
+    <p><b>Encumbrance type: </b>{{ encumbrance.encumbrance_type }}</p>
+    <p><b>Debt amount: </b>{{ encumbrance.debt_amount }}</p>
+    <p><b>Deadline: </b>{{ encumbrance.deadline }}</p>
+
+    <p><b>Object info: </b></p>
+       <ul>
+           <li>ID: {{ object.id }}</li>
+           <li>Serial number: {{ object.serial_number }}</li>
+           <li>Description: {{ object.description }}</li>
+       </ul>
    </div>
   </div>
 </div>
@@ -136,4 +190,13 @@
     }
   }
 </script>
+{% else %}
+<div class="container">
+  <div class="row">
+   <div class="thumbnail">
+       <p>The encumbrance is not yet validated by administrator, additional info will not be shown.</p>
+    </div>
+  </div>
+</div>
+{% endif %}
 {% endblock %}
