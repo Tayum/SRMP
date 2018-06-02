@@ -1,0 +1,46 @@
+{% extends "property/base.html" %}
+
+{% block headblock %}
+  <title>SRMP | Debtors</title>
+{% endblock %}
+
+{% block bodyblock %}
+  <div class="container">
+    <div class="row">
+     <div class="thumbnail">
+       <form class="navbar-form navbar-left" action="/property/debtors/">
+         <div class="form-group">
+           <input type="text" class="form-control" name="query" id="query" placeholder="Search">
+         </div>
+         <button type="submit" class="btn btn-primary">Search</button>
+       </form>
+       <table class="table table-hover">
+         <thead>
+           <tr>
+             <th>ID</th>
+             <th>Full name</th>
+             <th>Address</th>
+             <th>Code</th>
+           </tr>
+         </thead>
+         <tbody>
+           {% for d in debtors %}
+             <tr>
+               <td>{{ d.id }}</td>
+               <td>{{ d.full_name }}</td>
+               <td>{{ d.address_id }}</td>
+               <td>{{ d.code }}</td>
+               <td>
+                 <form class="navbar-form navbar-left" action="/property/delete_debtor/" method="post">
+                   {% csrf_token %}
+                   <button type="submit" name="target"  value="{{d.id}}" class="btn btn-danger" role="button">Delete</button>
+                 </form>
+               </td>
+             </tr>
+           {% endfor %}
+         </tbody>
+       </table>
+     </div>
+    </div>
+  </div>
+{% endblock %}

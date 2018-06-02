@@ -4,6 +4,7 @@ from django.shortcuts import redirect
 
 
 from .postgres_manage import PostgresManage
+from .models import Debtor, Prosecutor, Encumbrance
 
 pm = PostgresManage()
 
@@ -22,10 +23,14 @@ def signup(request):
         notary['pwd'] = request.POST.get('pwd')
         notary['license'] = request.POST.get('doc')
 
-        pm.create_notary(notary)
+        notary = pm.create_notary(notary)
 
         # redirect to profile
-        return render(request, 'property/profile.html')
+        return render(request, 'property/profile.html',
+                      {
+                            "notary": notary,
+                            "encumbrances": None,
+                      })
     else:
         return render(request, 'property/signup.html')
 
@@ -33,21 +38,29 @@ def signup(request):
 @login_required
 def create_encumbrance(request):
     if request.method == "POST":
-        # TODO
         enc = dict()
         enc['date'] = str(request.POST.get('date', "1900-01-01"))
-        enc['prosecutor_id'] = request.POST.get('prosecutor', -1)
-        enc['debtor_id'] = request.POST.get('debtor', -1)
-        enc['notary_id'] = request.POST.get('notary', -1)
-        # enc['reason_document_id'] = request.POST.get('reason_document', -1)
+        enc['prosecutor_id'] = int(request.POST.get('prosecutor_id', -1))
+        enc['debtor_id'] = int(request.POST.get('debtor_id', -1))
+        enc['notary_id'] = int(request.POST.get('notary', -1))
+        # Reason Document
+        rd = {
+            "name": request.POST.get('reason_document_name', ""),
+            "date": str(request.POST.get('reason_document_date', "1900-01-01")),
+            "description": request.POST.get('reason_document_description', ""),
+        }
+
         enc['encumbrance_kind'] = request.POST.get('encumbrance_kind', "")
         enc['encumbrance_type'] = request.POST.get('encumbrance_type', "")
         enc['debt_amount'] = request.POST.get('debt_amount', "0")
         enc['deadline'] = str(request.POST.get('deadline', "1900-01-01"))
-        # enc['object_id'] = request.POST.get('object', -1)
+        # Object
+        obj = {
+            "serial_number": request.POST.get('object_serial_number', ""),
+            "description": request.POST.get('object_description', ""),
+        }
 
-        # (construct encumbrance dictionary from the values from form)
-        # enc_id = pm.create_encumbrance(enc)
+        enc_id = pm.create_encumbrance(enc, obj, rd)
         info = pm.read_encumbrances(enc_id, True)
         if info:
             return render(request, 'property/encumbrance.html',
@@ -69,19 +82,20 @@ def create_encumbrance(request):
                           })
     else:
         if not request.user.is_superuser and request.user.notary.licensed:
-            prosecutors = pm.read_prosecutors()
-            prosecutors = [{
+            prosecs = pm.read_prosecutors()
+            prosecs = [{
                 "id": p['id'],
-                "value": p['full_name'],
-            } for p in prosecutors]
-            debtors = pm.read_debtors()
-            debtors = [{
+                "code": p['code'],
+            } for p in prosecs]
+            debts = pm.read_debtors()
+            debts = [{
                 "id": d['id'],
-                "value": d['full_name'],
-            } for d in debtors]
+                "code": d['code'],
+            } for d in debts]
+            print(debtors)
             return render(request, 'property/create_encumbrance.html', {
-                "prosecutors": prosecutors,
-                "debtors": debtors,
+                "prosecutors": prosecs,
+                "debtors": debts,
             })
         else:
             return render(request, 'property/index.html')
@@ -146,6 +160,7 @@ def profile(request):
                             "encumbrances": encs,
                       })
 
+
 @login_required
 def modify_encumbrance(request):
     if request.method == "POST":
@@ -153,56 +168,57 @@ def modify_encumbrance(request):
             return redirect("/property/")
         enc_id = request.POST.get('encumbrance_id', -1)
         enc = dict()
-        enc['date'] = str(request.POST.get('date', "1900-01-01"))
-        enc['prosecutor_id'] = request.POST.get('prosecutor', -1)
-        enc['debtor_id'] = request.POST.get('debtor', -1)
-        enc['reason_document_id'] = request.POST.get('reason_document', -1)
+        enc['prosecutor_id'] = int(request.POST.get('prosecutor_id', -1))
+        enc['debtor_id'] = int(request.POST.get('debtor_id', -1))
+        rd = {
+            "name": request.POST.get("reason_document_name", ""),
+            "description": request.POST.get("reason_document_description", ""),
+        }
         enc['encumbrance_kind'] = request.POST.get('encumbrance_kind', "")
         enc['encumbrance_type'] = request.POST.get('encumbrance_type', "")
         enc['debt_amount'] = request.POST.get('debt_amount', "0")
         enc['deadline'] = str(request.POST.get('deadline', "1900-01-01"))
-        enc['object_id'] = request.POST.get('object', -1)
+        obj = {
+            "serial_number": request.POST.get("object_serial_number", ""),
+            "description": request.POST.get("object_description", ""),
+        }
 
-        pm.modify_encumbrance(enc_id, enc)
-        return redirect("/property/encumbrance?id=" + enc_id)
+        pm.modify_encumbrance(enc_id, enc, obj, rd)
+        return redirect("/property/profile/")
     else:
         if request.user.is_superuser:
             return redirect("/property/")
         id = request.GET.get('id', -1)
         enc = pm.read_encumbrance_for_modifying(id)
         enc = enc[0] if enc else None
-        if enc:
-            prosecutors = pm.read_prosecutors()
-            prosecutors = [{
+        print(enc)
+        if enc and enc['notary_id_id'] == request.user.id:
+            rd = pm.read_reason_documents(enc['reason_document_id'])
+            obj = pm.read_objects(enc['object_id_id'])
+            prosecs = pm.read_prosecutors()
+            prosecs = [{
                 "id": p['id'],
-                "value": p['full_name'],
-            } for p in prosecutors]
-            debtors = pm.read_debtors()
-            debtors = [{
+                "code": p['code'],
+            } for p in prosecs]
+            debts = pm.read_debtors()
+            debts = [{
                 "id": d['id'],
-                "value": d['full_name'],
-            } for d in debtors]
-            rds = pm.read_reason_documents()
-            rds = [{
-                "id": rd['id'],
-                "value": rd['name'],
-            } for rd in rds]
-            objs = pm.read_objects()
-            objs = [{
-                "id": o['id'],
-                "value": o['serial_number'],
-            } for o in objs]
+                "code": d['code'],
+            } for d in debts]
             enc['date'] = str(enc['date'])
             enc['deadline'] = str(enc['deadline'])
             return render(request, 'property/modify_encumbrance.html', {
+                "current_prosecutor_code": pm.read_prosecutors(enc['prosecutor_id_id']).code,
+                "current_debtor_code": pm.read_debtors(enc['debtor_id_id']).code,
                 "encumbrance": enc,
-                "prosecutors": prosecutors,
-                "debtors": debtors,
-                "reason_documents": rds,
-                "objects": objs,
+                "reason_document": rd,
+                "object": obj,
+                "prosecutors": prosecs,
+                "debtors": debts,
             })
         else:
             return render(request, 'property/index.html')
+
 
 @login_required
 def create_debtor(request):
@@ -246,4 +262,79 @@ def create_prosecutor(request):
         return redirect("/property/")
     else:
         return render(request, 'property/create_prosecutor.html')
+
+
+# TODO REDO
+@login_required
+def debtors(request):
+    if request.user.is_superuser or not request.user.notary.licensed:
+        return redirect("/property/")
+
+    try:
+        query = request.GET['query']
+    except KeyError:
+        query = None
+
+    if query is None:
+        debts = Debtor.objects.all()
+    else:
+        debts = Debtor.objects.filter(code=query)
+
+    return render(request, 'property/debtors.html',
+                  {
+                      "debtors": debts,
+                  })
+
+
+# TODO REDO
+@login_required
+def prosecutors(request):
+    if request.user.is_superuser or not request.user.notary.licensed:
+        return redirect("/property/")
+
+    try:
+        query = request.GET['query']
+    except KeyError:
+        query = None
+
+    if query is None:
+        prosecs = Prosecutor.objects.all()
+    else:
+        prosecs = Prosecutor.objects.filter(code=query)
+
+    return render(request, 'property/prosecutors.html',
+                  {
+                      "prosecutors": prosecs,
+                  })
+
+
+# TODO REDO
+@login_required
+def delete_debtor(request):
+    if request.user.is_superuser or not request.user.notary.licensed:
+        return redirect("/property/")
+
+    if request.method == "POST":
+        id = int(request.POST['target'])
+        if Encumbrance.objects.filter(debtor_id__id=id).count() is not 0:
+            pass
+        else:
+            Debtor.objects.get(pk=id).delete()
+
+    return redirect('/property/debtors/')
+
+
+# TODO REDO
+@login_required
+def delete_prosecutor(request):
+    if request.user.is_superuser or not request.user.notary.licensed:
+        return redirect("/property/")
+    if request.method == "POST":
+        id = int(request.POST['target'])
+        if Encumbrance.objects.filter(prosecutor_id__id=id).count() is not 0:
+            pass
+        else:
+            Prosecutor.objects.get(id=id).delete()
+
+    return redirect('/property/prosecutors/')
 

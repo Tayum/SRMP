@@ -19,6 +19,7 @@ class PostgresManage:
         user = User.objects.create_user(username=notary['login'], password=notary['pwd'])
         notary = Notary(id=user, full_name=notary['full_name'], licensed=False, license=notary['license'])
         notary.save()
+        return notary
 
     def create_encumbrance(self, encumbrance, ob, reason_doc):
         # encumbrance
@@ -53,7 +54,7 @@ class PostgresManage:
         enc.save()
         return enc_id
 
-    def read_encumbrances(self, query=None, single=False):
+    def read_encumbrances(self, query=None, detailed_info=False):
         if query:
             try:
                 query = int(query)
@@ -61,7 +62,7 @@ class PostgresManage:
                 pass
 
             if isinstance(query, int):
-                if query > 0 and single:
+                if query > 0 and detailed_info:
                     enc = Encumbrance.objects.filter(id=query).values()
                     enc = enc[0]
                     prosecutor = enc['prosecutor_id_id']
@@ -89,15 +90,15 @@ class PostgresManage:
                         }
                     else:
                         return None
-                elif query > 0 and not single:
+                elif query > 0 and not detailed_info:
                     return Encumbrance.objects.filter(id=query).values()
                 else:
                     return None
-            elif not single:
+            elif not detailed_info:
                 return Encumbrance.objects.filter(encumbrance_type=query).values()
             else:
                 return None
-        elif not single:
+        elif not detailed_info:
             return Encumbrance.objects.values('id', 'encumbrance_type', 'encumbrance_kind',
                                               'date', 'notary_id__full_name')
         else:
@@ -107,13 +108,13 @@ class PostgresManage:
         if id:
             return Prosecutor.objects.get(id=id)
         else:
-            return Prosecutor.objects.values('id', 'full_name')
+            return Prosecutor.objects.values('id', 'code')
 
     def read_debtors(self, id=None):
         if id:
             return Debtor.objects.get(id=id)
         else:
-            return Debtor.objects.values('id', 'full_name')
+            return Debtor.objects.values('id', 'code')
 
     def read_reason_documents(self, id=None):
         if id:
@@ -156,22 +157,35 @@ class PostgresManage:
             else:
                 return None
 
-    def modify_encumbrance(self, enc_id, new_values_enc):
+    def modify_encumbrance(self, enc_id, new_values_enc, new_values_obj, new_values_rd):
         try:
             enc = Encumbrance.objects.filter(id=enc_id).get()
         except:
             return None
-        enc.date = new_values_enc['date']
+
+        # prosecutor
         prosecutor = self.read_prosecutors(new_values_enc['prosecutor_id'])
         enc.prosecutor_id = prosecutor
+
+        # debtor
         debtor = self.read_debtors(new_values_enc['debtor_id'])
         enc.debtor_id = debtor
+
+        # reason document
+        enc.reason_document.name = new_values_rd['name']
+        enc.reason_document.description = new_values_rd['description']
+        enc.reason_document.save()
+
         enc.encumbrance_kind = new_values_enc['encumbrance_kind']
         enc.encumbrance_type = new_values_enc['encumbrance_type']
         enc.debt_amount = new_values_enc['debt_amount']
         enc.deadline = new_values_enc['deadline']
-        obj = self.read_objects(new_values_enc['object_id'])
-        enc.object_id = obj
+
+        # object
+        enc.object_id.serial_number = new_values_obj['serial_number']
+        enc.object_id.description = new_values_obj['description']
+        enc.object_id.save()
+
         enc.save()
 
     def create_debtor(self, debt, addr):
@@ -189,5 +203,5 @@ class PostgresManage:
         address.save()
 
         prosecutor = Prosecutor(full_name=pros['full_name'], code=pros['code'],
-                        options=pros['options'], address_id=address)
+                                options=pros['options'], address_id=address)
         prosecutor.save()

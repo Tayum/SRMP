@@ -1,0 +1,46 @@
+{% extends "property/base.html" %}
+
+{% block headblock %}
+  <title>SRMP | Prosecutors</title>
+{% endblock %}
+
+{% block bodyblock %}
+  <div class="container">
+    <div class="row">
+     <div class="thumbnail">
+       <form class="navbar-form navbar-left" action="/property/prosecutors/">
+         <div class="form-group">
+           <input type="text" class="form-control" name="query" id="query" placeholder="Search">
+         </div>
+         <button type="submit" class="btn btn-primary">Search</button>
+       </form>
+       <table class="table table-hover">
+         <thead>
+           <tr>
+             <th>ID</th>
+             <th>Full name</th>
+             <th>Address</th>
+             <th>Code</th>
+           </tr>
+         </thead>
+         <tbody>
+           {% for p in prosecutors %}
+             <tr>
+               <td>{{ p.id }}</td>
+               <td>{{ p.full_name }}</td>
+               <td>{{ p.address_id }}</td>
+               <td>{{ p.code }}</td>
+               <td>
+                 <form class="navbar-form navbar-left" action="/property/delete_prosecutor/" method="post">
+                   {% csrf_token %}
+                   <button type="submit" name="target" value="{{ p.id }}" class="btn btn-danger" role="button">Delete</button>
+                 </form>
+               </td>
+             </tr>
+           {% endfor %}
+         </tbody>
+       </table>
+     </div>
+    </div>
+  </div>
+{% endblock %}

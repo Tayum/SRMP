@@ -25,8 +25,16 @@
       </div>
       <ul class="nav navbar-nav navbar">
         <li class="active">
-          <a href="/property/encumbrances/">List encumbrance</a>
+          <a href="/property/encumbrances/">Encumbrances</a>
         </li>
+        {% if user.is_authenticated and not user.is_superuser and user.notary.licensed %}
+          <li class="active">
+            <a href="/property/debtors/">Debtors</a>
+          </li>
+          <li class="active">
+            <a href="/property/prosecutors/">Prosecutors</a>
+          </li>
+        {% endif %}
       </ul>
       {% if user.is_authenticated %}
         <ul class="nav navbar-nav navbar-right">

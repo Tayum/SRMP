@@ -13,4 +13,8 @@ urlpatterns = [
     path('modify_encumbrance/', views.modify_encumbrance, name='modify_encumbrance'),
     path('create_debtor/', views.create_debtor, name='create_debtor'),
     path('create_prosecutor/', views.create_prosecutor, name='create_prosecutor'),
+    path('prosecutors/', views.prosecutors, name='prosecutors'),
+    path('delete_prosecutor/', views.delete_prosecutor, name='delete_prosecutor'),
+    path('debtors/', views.debtors, name='debtors'),
+    path('delete_debtor/', views.delete_debtor, name='delete_debtor'),
 ]
