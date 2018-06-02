@@ -20,8 +20,7 @@ class PostgresManage:
         notary = Notary(id=user, full_name=notary['full_name'], licensed=False, license=notary['license'])
         notary.save()
 
-    def create_encumbrance(self, encumbrance):
-        # TODO
+    def create_encumbrance(self, encumbrance, ob, reason_doc):
         # encumbrance
         d_string = encumbrance['date'].split("-")
         d_string = [int(ds) for ds in d_string]
@@ -31,13 +30,21 @@ class PostgresManage:
         dd = date(d_string[0], d_string[1], d_string[2])
         prosecutor = self.read_prosecutors(encumbrance['prosecutor_id'])
         debtor = self.read_debtors(encumbrance['debtor_id'])
-        rd = self.read_reason_documents(encumbrance['reason_document_id'])
-        obj = self.read_objects(encumbrance['object_id'])
+
+        reason_document_date_string = reason_doc['date'].split("-")
+        reason_document_date_string = [int(rdds) for rdds in reason_document_date_string]
+        reason_document_date = date(reason_document_date_string[0], reason_document_date_string[1], reason_document_date_string[2])
+        reason_document = ReasonDocument(name=reason_doc['name'], description=reason_doc['description'],
+                                         date=reason_document_date)
+        reason_document.save()
+
+        obj = Object(serial_number=ob['serial_number'], description=ob['description'])
+        obj.save()
 
         notary = self.read_notaries(encumbrance['notary_id'])
         enc = Encumbrance(date=d, prosecutor_id=prosecutor,
                           debtor_id=debtor, notary_id=notary,
-                          reason_document=rd, encumbrance_kind=encumbrance['encumbrance_kind'],
+                          reason_document=reason_document, encumbrance_kind=encumbrance['encumbrance_kind'],
                           encumbrance_type=encumbrance['encumbrance_type'], debt_amount=encumbrance['debt_amount'],
                           deadline=dd, object_id=obj, checked=False, hashcode="",)
         enc.save()
@@ -54,7 +61,7 @@ class PostgresManage:
                 pass
 
             if isinstance(query, int):
-                if query > 0:
+                if query > 0 and single:
                     enc = Encumbrance.objects.filter(id=query).values()
                     enc = enc[0]
                     prosecutor = enc['prosecutor_id_id']
@@ -82,6 +89,8 @@ class PostgresManage:
                         }
                     else:
                         return None
+                elif query > 0 and not single:
+                    return Encumbrance.objects.filter(id=query).values()
                 else:
                     return None
             elif not single:
@@ -164,3 +173,21 @@ class PostgresManage:
         obj = self.read_objects(new_values_enc['object_id'])
         enc.object_id = obj
         enc.save()
+
+    def create_debtor(self, debt, addr):
+        address = Address(index=addr['index'], city=addr['city'],
+                          country=addr['country'], street=addr['street'])
+        address.save()
+
+        debtor = Debtor(full_name=debt['full_name'], code=debt['code'],
+                        options=debt['options'], address_id=address)
+        debtor.save()
+
+    def create_prosecutor(self, pros, addr):
+        address = Address(index=addr['index'], city=addr['city'],
+                          country=addr['country'], street=addr['street'])
+        address.save()
+
+        prosecutor = Prosecutor(full_name=pros['full_name'], code=pros['code'],
+                        options=pros['options'], address_id=address)
+        prosecutor.save()

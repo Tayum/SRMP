@@ -1,0 +1,202 @@
+{% extends "property/base.html" %}
+
+{% block headblock %}
+  <title>SRMP | Encumbrance page</title>
+  <style>
+    body {
+      background: url(https://sharij.net/wp-content/uploads/2017/07/ukraine.jpg) no-repeat;
+      background-size: 100%;
+    }
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      display: none;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.98);
+      z-index: 999;
+      -webkit-animation: fade .6s;
+      -moz-animation: fade .6s;
+      animation: fade .6s;
+      overflow: auto;
+    }
+    .popup {
+      top: 25%;
+      left: 0;
+      right: 0;
+      font-size: 14px;
+      margin: auto;
+      width: 85%;
+      min-width: 320px;
+      min-height: 200px;
+      max-width: 600px;
+      position: absolute;
+      padding: 15px 20px;
+      border: 1px solid #383838;
+      background: #fefefe;
+      z-index: 1000;
+      -webkit-border-radius: 4px;
+      -moz-border-radius: 4px;
+      -ms-border-radius: 4px;
+      border-radius: 4px;
+      font: 14px/18px 'Tahoma', Arial, sans-serif;
+      -webkit-box-shadow: 0 15px 20px rgba(0,0,0,.22),0 19px 60px rgba(0,0,0,.3);
+      -moz-box-shadow: 0 15px 20px rgba(0,0,0,.22),0 19px 60px rgba(0,0,0,.3);
+      -ms-box-shadow: 0 15px 20px rgba(0,0,0,.22),0 19px 60px rgba(0,0,0,.3);
+      box-shadow: 0 15px 20px rgba(0,0,0,.22),0 19px 60px rgba(0,0,0,.3);
+      -webkit-animation: fade .6s;
+      -moz-animation: fade .6s;
+      animation: fade .6s;
+    }
+    .close1 {
+      top: 15px;
+      right: 30px;
+      width: 100px;
+      height: 100px;
+      position: absolute;
+      border: none;
+      -webkit-border-radius: 50%;
+      -moz-border-radius: 50%;
+      -ms-border-radius: 50%;
+      -o-border-radius: 50%;
+      border-radius: 50%;
+      background-color: rgba(0, 116, 200, 0.95);
+      -webkit-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+      -moz-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+      box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+      cursor: pointer;
+      outline: none;
+
+    }
+    .close1:before {
+      color: rgba(255, 255, 255, 0.9);
+      content: "OPEN";
+      font-family:  Arial, Helvetica, sans-serif;
+      font-size: 14px;
+      font-weight: normal;
+      text-decoration: none;
+      text-shadow: 0 -1px rgba(0, 0, 0, 0.9);
+      -webkit-transition: all 0.5s;
+      -moz-transition: all 0.5s;
+      transition: all 0.5s;
+    }
+    .close1:hover {
+      background-color: rgba(252, 20, 0, 0.52);
+    }
+  </style>
+{% endblock %}
+
+{% block bodyblock %}
+{% if info %}
+<div id="overlay">
+    <div class="popup">
+        <h2 style="margin-left:20px;">Check private code</h2>
+        <br><br>
+        <div class="col-sm-7">
+          <input type="text" class="form-control" id="input_pwd">
+        </div>
+        <button class="close1" id="secret_pwd" value="{{ encumbrance.hashcode }}"
+        onclick="validatePassword()"></button>
+    </div>
+</div>
+
+
+<div class="container">
+  <div class="row">
+   <div class="thumbnail">
+    <a href="/property/modify_encumbrance/?id={{ encumbrance.id }}" class="btn btn-warning" role="button" style="float: right;">
+      Modify encumbrance
+    </a>
+    <p><b>ID: </b>{{ encumbrance.id }}</p>
+    <p><b>Date: </b>{{ encumbrance.date }}</p>
+
+    <p><b>Prosecutor info: </b></p>
+       <ul>
+           <li>ID: {{ prosecutor.id }}</li>
+           <li>Full Name: {{ prosecutor.full_name }}</li>
+           <li>
+               <b>Address:</b>
+                 <ul>
+                     <li>{{ prosecutor_addr.index }}</li>
+                     <li>{{ prosecutor_addr.city }}</li>
+                     <li>{{ prosecutor_addr.street }}</li>
+                     <li>{{ prosecutor_addr.country }}</li>
+                 </ul>
+           </li>
+           <li>Options: {{ prosecutor.options }}</li>
+           <li>Code: {{ prosecutor.code }}</li>
+       </ul>
+
+    <p><b>Debtor info: </b></p>
+       <ul>
+           <li>ID: {{ debtor.id }}</li>
+           <li>Full Name: {{ debtor.full_name }}</li>
+           <li>
+               <b>Address:</b>
+                 <ul>
+                     <li>{{ debtor_addr.index }}</li>
+                     <li>{{ debtor_addr.city }}</li>
+                     <li>{{ debtor_addr.street }}</li>
+                     <li>{{ debtor_addr.country }}</li>
+                 </ul>
+           </li>
+           <li>Options: {{ debtor.options }}</li>
+           <li>Code: {{ debtor.code }}</li>
+       </ul>
+
+    <p><b>Notary info: </b></p>
+       <ul>
+           <li>ID: {{ notary.id }}</li>
+           <li>Full name: {{ notary.full_name }}</li>
+       </ul>
+
+    <p><b>Reason Document: </b></p>
+       <ul>
+           <li>ID: {{ reason_document.id }}</li>
+           <li>Name: {{ reason_document.name }}</li>
+           <li>Date: {{ reason_document.date }}</li>
+           <li>Description: {{ reason_document.description }}</li>
+       </ul>
+
+    <p><b>Encumbrance kind: </b>{{ encumbrance.encumbrance_kind }}</p>
+    <p><b>Encumbrance type: </b>{{ encumbrance.encumbrance_type }}</p>
+    <p><b>Debt amount: </b>{{ encumbrance.debt_amount }}</p>
+    <p><b>Deadline: </b>{{ encumbrance.deadline }}</p>
+
+    <p><b>Object info: </b></p>
+       <ul>
+           <li>ID: {{ object.id }}</li>
+           <li>Serial number: {{ object.serial_number }}</li>
+           <li>Description: {{ object.description }}</li>
+       </ul>
+   </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+  var delay_popup = 1;
+  setTimeout("document.getElementById('overlay').style.display='block'", delay_popup);
+
+
+  function validatePassword(){
+    var secret_pwd = document.getElementById("secret_pwd").value;
+    var input_pwd = document.getElementById("input_pwd").value;
+    if(input_pwd != secret_pwd){
+      alert("Don`t Match!");
+    }
+    else{
+      document.getElementById('overlay').style.display='none';
+    }
+  }
+</script>
+{% else %}
+<div class="container">
+  <div class="row">
+   <div class="thumbnail">
+       <p>The encumbrance is not yet validated by administrator, additional info will not be shown.</p>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

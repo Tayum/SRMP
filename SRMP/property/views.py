@@ -33,20 +33,21 @@ def signup(request):
 @login_required
 def create_encumbrance(request):
     if request.method == "POST":
+        # TODO
         enc = dict()
         enc['date'] = str(request.POST.get('date', "1900-01-01"))
         enc['prosecutor_id'] = request.POST.get('prosecutor', -1)
         enc['debtor_id'] = request.POST.get('debtor', -1)
         enc['notary_id'] = request.POST.get('notary', -1)
-        enc['reason_document_id'] = request.POST.get('reason_document', -1)
+        # enc['reason_document_id'] = request.POST.get('reason_document', -1)
         enc['encumbrance_kind'] = request.POST.get('encumbrance_kind', "")
         enc['encumbrance_type'] = request.POST.get('encumbrance_type', "")
         enc['debt_amount'] = request.POST.get('debt_amount', "0")
         enc['deadline'] = str(request.POST.get('deadline', "1900-01-01"))
-        enc['object_id'] = request.POST.get('object', -1)
+        # enc['object_id'] = request.POST.get('object', -1)
 
         # (construct encumbrance dictionary from the values from form)
-        enc_id = pm.create_encumbrance(enc)
+        # enc_id = pm.create_encumbrance(enc)
         info = pm.read_encumbrances(enc_id, True)
         if info:
             return render(request, 'property/encumbrance.html',
@@ -78,21 +79,9 @@ def create_encumbrance(request):
                 "id": d['id'],
                 "value": d['full_name'],
             } for d in debtors]
-            rds = pm.read_reason_documents()
-            rds = [{
-                "id": rd['id'],
-                "value": rd['name'],
-            } for rd in rds]
-            objs = pm.read_objects()
-            objs = [{
-                "id": o['id'],
-                "value": o['serial_number'],
-            } for o in objs]
             return render(request, 'property/create_encumbrance.html', {
                 "prosecutors": prosecutors,
                 "debtors": debtors,
-                "reason_documents": rds,
-                "objects": objs,
             })
         else:
             return render(request, 'property/index.html')
@@ -160,6 +149,8 @@ def profile(request):
 @login_required
 def modify_encumbrance(request):
     if request.method == "POST":
+        if request.user.is_superuser:
+            return redirect("/property/")
         enc_id = request.POST.get('encumbrance_id', -1)
         enc = dict()
         enc['date'] = str(request.POST.get('date', "1900-01-01"))
@@ -175,6 +166,8 @@ def modify_encumbrance(request):
         pm.modify_encumbrance(enc_id, enc)
         return redirect("/property/encumbrance?id=" + enc_id)
     else:
+        if request.user.is_superuser:
+            return redirect("/property/")
         id = request.GET.get('id', -1)
         enc = pm.read_encumbrance_for_modifying(id)
         enc = enc[0] if enc else None
@@ -210,3 +203,47 @@ def modify_encumbrance(request):
             })
         else:
             return render(request, 'property/index.html')
+
+@login_required
+def create_debtor(request):
+    if request.user.is_superuser or not request.user.notary.licensed:
+        return redirect("/property/")
+    if request.method == "POST":
+        debtor = dict()
+        debtor['full_name'] = str(request.POST.get('full_name', ""))
+        debtor['options'] = request.POST.get('options', "")
+        debtor['code'] = request.POST.get('code', "")
+        address = {
+            "index": request.POST.get('address_index', ""),
+            "city": request.POST.get('address_city', ""),
+            "street": request.POST.get('address_street', ""),
+            "country": request.POST.get('address_country', ""),
+        }
+
+        debtor_id = pm.create_debtor(debtor, address)
+        return redirect("/property/")
+    else:
+        return render(request, 'property/create_debtor.html')
+
+
+@login_required
+def create_prosecutor(request):
+    if request.user.is_superuser or not request.user.notary.licensed:
+        return redirect("/property/")
+    if request.method == "POST":
+        prosecutor = dict()
+        prosecutor['full_name'] = str(request.POST.get('full_name', ""))
+        prosecutor['options'] = request.POST.get('options', "")
+        prosecutor['code'] = request.POST.get('code', "")
+        address = {
+            "index": request.POST.get('address_index', ""),
+            "city": request.POST.get('address_city', ""),
+            "street": request.POST.get('address_street', ""),
+            "country": request.POST.get('address_country', ""),
+        }
+
+        prosecutor_id = pm.create_prosecutor(prosecutor, address)
+        return redirect("/property/")
+    else:
+        return render(request, 'property/create_prosecutor.html')
+

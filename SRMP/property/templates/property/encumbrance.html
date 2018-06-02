@@ -1,5 +1,4 @@
 {% extends "property/base.html" %}
-
 {% block headblock %}
   <title>SRMP | Encumbrance page</title>
   <style>
@@ -86,9 +85,7 @@
     }
   </style>
 {% endblock %}
-
 {% block bodyblock %}
-{% if info %}
 <div id="overlay">
     <div class="popup">
         <h2 style="margin-left:20px;">Check private code</h2>
@@ -96,80 +93,107 @@
         <div class="col-sm-7">
           <input type="text" class="form-control" id="input_pwd">
         </div>
-        <button class="close1" id="secret_pwd" value="{{ encumbrance.hashcode }}"
+        <button class="close1" id="secret_pwd" value="{{encumbrance.hashcode}}"
         onclick="validatePassword()"></button>
     </div>
 </div>
 
 
 <div class="container">
+{% if info %}
   <div class="row">
    <div class="thumbnail">
-    <a href="/property/modify_encumbrance/?id={{ encumbrance.id }}" class="btn btn-warning" role="button" style="float: right;">
-      Modify encumbrance
-    </a>
-    <p><b>ID: </b>{{ encumbrance.id }}</p>
-    <p><b>Date: </b>{{ encumbrance.date }}</p>
-
-    <p><b>Prosecutor info: </b></p>
-       <ul>
-           <li>ID: {{ prosecutor.id }}</li>
-           <li>Full Name: {{ prosecutor.full_name }}</li>
-           <li>
-               <b>Address:</b>
-                 <ul>
-                     <li>{{ prosecutor_addr.index }}</li>
-                     <li>{{ prosecutor_addr.city }}</li>
-                     <li>{{ prosecutor_addr.street }}</li>
-                     <li>{{ prosecutor_addr.country }}</li>
-                 </ul>
-           </li>
-           <li>Options: {{ prosecutor.options }}</li>
-           <li>Code: {{ prosecutor.code }}</li>
-       </ul>
-
-    <p><b>Debtor info: </b></p>
-       <ul>
-           <li>ID: {{ debtor.id }}</li>
-           <li>Full Name: {{ debtor.full_name }}</li>
-           <li>
-               <b>Address:</b>
-                 <ul>
-                     <li>{{ debtor_addr.index }}</li>
-                     <li>{{ debtor_addr.city }}</li>
-                     <li>{{ debtor_addr.street }}</li>
-                     <li>{{ debtor_addr.country }}</li>
-                 </ul>
-           </li>
-           <li>Options: {{ debtor.options }}</li>
-           <li>Code: {{ debtor.code }}</li>
-       </ul>
-
-    <p><b>Notary info: </b></p>
-       <ul>
-           <li>ID: {{ notary.id }}</li>
-           <li>Full name: {{ notary.full_name }}</li>
-       </ul>
-
-    <p><b>Reason Document: </b></p>
-       <ul>
-           <li>ID: {{ reason_document.id }}</li>
-           <li>Name: {{ reason_document.name }}</li>
-           <li>Date: {{ reason_document.date }}</li>
-           <li>Description: {{ reason_document.description }}</li>
-       </ul>
-
-    <p><b>Encumbrance kind: </b>{{ encumbrance.encumbrance_kind }}</p>
-    <p><b>Encumbrance type: </b>{{ encumbrance.encumbrance_type }}</p>
+    <h2 style="text-align:center;">Encumbrance</h2>
+    <h4 style="text-align:center;"><b>Kind: </b>{{ encumbrance.encumbrance_kind }}</h4>
+    <h4 style="text-align:center;"><b>Type: </b>{{ encumbrance.encumbrance_type }}</h4>
+    <p style="float:right;"><b>Date: </b>{{ encumbrance.date }}</p>
     <p><b>Debt amount: </b>{{ encumbrance.debt_amount }}</p>
+    <p style="float:right;"><b>ID: </b>{{ encumbrance.id }}</p>
     <p><b>Deadline: </b>{{ encumbrance.deadline }}</p>
 
-    <p><b>Object info: </b></p>
-       <ul>
-           <li>ID: {{ object.id }}</li>
-           <li>Serial number: {{ object.serial_number }}</li>
-           <li>Description: {{ object.description }}</li>
-       </ul>
+    <br>
+    <ul class="nav nav-tabs">
+      <li class="active"><a data-toggle="tab" href="#prosecutor_info">Prosecutor info</a></li>
+      <li><a data-toggle="tab" href="#debtor_info">Debtor info</a></li>
+      <li><a data-toggle="tab" href="#notary_info">Notary info</a></li>
+      <li><a data-toggle="tab" href="#reason_document">Reason document</a></li>
+      <li><a data-toggle="tab" href="#object_info">Object info</a></li>
+    </ul>
+
+    <div class="tab-content">
+      <div id="prosecutor_info" class="tab-pane fade in active">
+        <div class="list-group">
+          <a href="#" class="list-group-item"><b>ID: </b>{{ prosecutor.id }}</a>
+          <a href="#" class="list-group-item"><b>Full Name: </b>{{ prosecutor.full_name }}</a>
+          <a href="#" class="list-group-item"><b>Options: </b>{{ prosecutor.options }}</a>
+          <a href="#" class="list-group-item"><b>Code: </b>{{ prosecutor.code }}</a>
+          <div class="panel-group">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  <a data-toggle="collapse" href="#collapse1" style="font-size:14px;"><b>Address:</b></a>
+                </h4>
+              </div>
+              <div id="collapse1" class="panel-collapse collapse">
+                <ul class="list-group">
+                  <li class="list-group-item">{{ prosecutor_addr.index }}</li>
+                  <li class="list-group-item">{{ prosecutor_addr.city }}</li>
+                  <li class="list-group-item">{{ prosecutor_addr.street }}</li>
+                  <li class="list-group-item">{{ prosecutor_addr.country }}</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="debtor_info" class="tab-pane fade">
+        <div class="list-group">
+          <a href="#" class="list-group-item"><b>ID: </b>{{ debtor.id }}</a>
+          <a href="#" class="list-group-item"><b>Full Name: </b>{{ debtor.full_name }}</a>
+          <a href="#" class="list-group-item"><b>Options: </b>{{ debtor.options }}</a>
+          <a href="#" class="list-group-item"><b>Code: </b>{{ debtor.code }}</a>
+          <div class="panel-group">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  <a data-toggle="collapse" href="#collapse2" style="font-size:14px;"><b>Address:</b></a>
+                </h4>
+              </div>
+              <div id="collapse2" class="panel-collapse collapse">
+                <ul class="list-group">
+                  <li class="list-group-item">{{ debtor_addr.index }}</li>
+                  <li class="list-group-item">{{ debtor_addr.city }}</li>
+                  <li class="list-group-item">{{ debtor_addr.street }}</li>
+                  <li class="list-group-item">{{ debtor_addr.country }}</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="notary_info" class="tab-pane fade">
+        <div class="list-group">
+          <a href="#" class="list-group-item"><b>ID: </b>{{ notary.id }}</a>
+          <a href="#" class="list-group-item"><b>Full name: </b>{{ notary.full_name }}</a>
+        </div>
+      </div>
+      <div id="reason_document" class="tab-pane fade">
+        <div class="list-group">
+          <a href="#" class="list-group-item"><b>ID: </b>{{ reason_document.id }}</a>
+          <a href="#" class="list-group-item"><b>Name: </b>{{ reason_document.name }}</a>
+          <a href="#" class="list-group-item"><b>Date: </b>{{ reason_document.date }}</a>
+          <a href="#" class="list-group-item"><b>Description: </b>{{ reason_document.description }}</a>
+        </div>
+      </div>
+      <div id="object_info" class="tab-pane fade">
+        <div class="list-group">
+          <a href="#" class="list-group-item"><b>ID: </b>{{ object.id }}</a>
+          <a href="#" class="list-group-item"><b>Serial number: </b>{{ object.serial_number }}</a>
+          <a href="#" class="list-group-item"><b>Description: </b>{{ object.description }}</a>
+        </div>
+      </div>
+    </div>
+       <a href="/property/modify_encumbrance?id={{ encumbrance.id }}" class="btn btn-success" role="button">Update</a>
    </div>
   </div>
 </div>
@@ -182,7 +206,7 @@
   function validatePassword(){
     var secret_pwd = document.getElementById("secret_pwd").value;
     var input_pwd = document.getElementById("input_pwd").value;
-    if(input_pwd != secret_pwd){
+    if(input_pwd.toString() != secret_pwd.toString()){
       alert("Don`t Match!");
     }
     else{
@@ -191,12 +215,12 @@
   }
 </script>
 {% else %}
-<div class="container">
-  <div class="row">
-   <div class="thumbnail">
-       <p>The encumbrance is not yet validated by administrator, additional info will not be shown.</p>
+    <div class="container">
+      <div class="row">
+       <div class="thumbnail">
+           <p>The encumbrance is not yet validated by administrator, additional info will not be shown.</p>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 {% endif %}
 {% endblock %}

@@ -1,0 +1,70 @@
+{% extends "property/base.html" %}
+
+{% block headblock %}
+  <title>SRMP | Prosecutor Registration</title>
+{% endblock %}
+
+{% block bodyblock %}
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="container">
+          <div class="col-xs-10">
+            <div class="thumbnail">
+              <form class="form-horizontal" action="/property/create_prosecutor/" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                  <label class="control-label col-sm-4" for="full_name">Full name:</label>
+                  <div class="col-sm-8">
+                    <input type="text" class="form-control" id="full_name" name="full_name" required>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-sm-4" for="address_index">Address index:</label>
+                  <div class="col-sm-8">
+                    <input type="text" class="form-control" id="address_index" name="address_index" required>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-sm-4" for="address_city">Address city:</label>
+                  <div class="col-sm-8">
+                    <input type="text" class="form-control" id="address_city" name="address_city" required>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-sm-4" for="address_street">Address street:</label>
+                  <div class="col-sm-8">
+                    <input type="text" class="form-control" id="address_street" name="address_street" required>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-sm-4" for="address_country">Address country:</label>
+                  <div class="col-sm-8">
+                    <input type="text" class="form-control" id="address_country" name="address_country" required>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-sm-4" for="options">Options:</label>
+                  <div class="col-sm-8">
+                    <input type="text" class="form-control" id="options" name="options" required>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-sm-4" for="code">Code:</label>
+                  <div class="col-sm-8">
+                    <input type="text" class="form-control" id="code" name="code" required>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-default" style="float:right">Create</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
